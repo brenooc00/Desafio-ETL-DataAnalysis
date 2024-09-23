@@ -1,4 +1,8 @@
 import pandas as pd
+import logging
+
+# Configuração básica dos logs
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def clean_data(df):
     #Realiza a limpeza básica dos dados, incluindo:
@@ -21,6 +25,8 @@ def clean_data(df):
     # Mudar nome das colunas
     df_cleaned = df_cleaned.rename(columns={'CustomerID': 'ID_Cliente', 'InvoiceNo': 'N_Fatura', 'Quantity': 'Quantidade', 'UnitPrice': 'Preço unitário','Country': 'País', 'StockCode': 'ID_Stock', 'InvoiceDate': 'Data Fatura', 'Description': 'Descrição'})
 
+    logging.info("Dados limpos com sucesso.")
+
     return df_cleaned
 
 def create_fact_table(df):
@@ -32,6 +38,7 @@ def create_fact_table(df):
     # Calcular as métricas de vendas
     fact_sales['Faturamento'] = (fact_sales['Quantidade'] * fact_sales['Preço unitário']).round(3)
 
+    logging.info("Tabela fato criada com sucesso.")
     return fact_sales
 
 def create_dimension_tables(df):
@@ -39,11 +46,9 @@ def create_dimension_tables(df):
 
     #Tabela Dimensão Cliente
     dim_customer = df[['ID_Cliente', 'País']].drop_duplicates()
-    #.set_index('ID_Cliente')
 
     # Tabela Dimensão Produto
     dim_product = df[['ID_Stock', 'Descrição']].drop_duplicates()
-    #.set_index('ID_Stock')
 
     # Tabela Dimensão Data
     # Criar tabela dimensão (dim_date)
@@ -56,7 +61,7 @@ def create_dimension_tables(df):
     dim_date['Ano'] = dim_date['Data Fatura'].dt.year # Adicionando a coluna de ano
     dim_date = dim_date[['Data', 'Horário', 'Horas', 'Dia', 'Mês', 'Ano']].drop_duplicates()
 
-
+    logging.info("Tabelas de dimensão criadas com sucesso.")
     return dim_customer, dim_product, dim_date
 
 def transform_data(df):
@@ -73,6 +78,7 @@ def transform_data(df):
     # Criação da tabela fato
     fact_sales = create_fact_table(df_cleaned)
 
+    logging.info("Dados transformados com sucesso.")
     return fact_sales, dim_customer, dim_product, dim_date
 
 if __name__ == "__main__":

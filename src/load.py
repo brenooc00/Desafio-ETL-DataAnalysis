@@ -1,6 +1,10 @@
 import pandas as pd
 from sqlalchemy import create_engine, Integer
 from db_connection import get_connection
+import logging
+
+# Configuração básica do log
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 def load_data_to_db(df, table_name, engine):
     #Carrega os dados transformados em uma tabela do banco de dados PostgreSQL.
@@ -19,9 +23,9 @@ def load_data_to_db(df, table_name, engine):
     try:
         # Carregar o DataFrame para a tabela do banco de dados
         df.to_sql(table_name, engine, if_exists='replace', index=False, dtype=dtype)
-        print(f"Tabela {table_name} carregada com sucesso!")
+        logging.info(f"Tabela {table_name} carregada com sucesso.")
     except Exception as e:
-        print(f"Erro ao carregar a tabela {table_name}: {e}")
+        logging.error(f"Erro ao carregar a tabela {table_name}: {e}")
 
 
 
